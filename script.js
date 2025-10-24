@@ -1,79 +1,61 @@
-const api_key = "b2cdf54b2c1cf2312370098beb121e71";
-const api_url = "https://api.openweathermap.org/data/2.5/weather";
+const apiKey = "YOUR_API_KEY"; // Replace with your OpenWeatherMap API key
 
 const cityInput = document.getElementById("city-input");
-const searchbtn = document.getElementById("search-btn");
-const weathercard = document.getElementById("weather-card");
-const citynameElem = document.getElementById("city-name");
+const searchBtn = document.getElementById("search-btn");
+const cityNameElem = document.getElementById("city-name");
 const temperatureElem = document.getElementById("temperature");
-const descriptionElem = document.getElementById("description");
-const humidityElem = document.getElementById("humidity");
-const windElem = document.getElementById("wind");
-const weatherIconElem = document.getElementById("weather-icon");
-const errorMsg = document.getElementById("error-msg");
+const conditionElem = document.getElementById("condition");
+const forecastContainer = document.getElementById("forecast-cards");
 
-const sampleData = {
-  name: "London",
-  weather: [
-    {
-      main: "Clouds",
-      description: "Broken clouds",
-      icon: "04d",
-    },
-  ],
-  main: {
-    temp: 16.5,
-    humidity: 72,
-  },
-  wind: {
-    speed: 4.2,
-  },
-};
+// Fetch current weather
+async function getCurrentWeather(city) {
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+  const response = await fetch(url);
+  const data = await response.json();
 
-const fetchWeather = async (city) => {
-  try {
-    const res = await fetch(
-      `${api_url}?q=${encodeURIComponent(city)}&appid=${api_key}&units=metric`
-    );
-
-    if (!res.ok) throw new Error("City not found");
-
-    const data = await res.json();
-    console.log("✅ API Response:", data);
-    displayWeather(data);
-  } catch (err) {
-    console.error("❌ Error:", err);
-    errorMsg.style.display = "block";
-    errorMsg.textContent = "City not found ❌";
-    weathercard.style.display = "none";
+  if (response.ok) {
+    cityNameElem.textContent = `${data.name}, ${data.sys.country}`;
+    temperatureElem.textContent = `Temperature: ${data.main.temp}°C`;
+    conditionElem.textContent = `Condition: ${data.weather[0].description}`;
+  } else {
+    alert("City not found!");
   }
-};
+}
 
-const displayWeather = (data) => {
-  citynameElem.textContent = data.name;
-  temperatureElem.textContent = `${Math.round(data.main.temp)}°C`;
-  descriptionElem.textContent = data.weather[0].description;
-  humidityElem.textContent = `💧 Humidity: ${data.main.humidity}%`;
-  windElem.textContent = `🌬 Wind Speed: ${data.wind.speed} m/s`;
+// Fetch 5-day forecast
+async function getForecast(city) {
+  const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
+  const response = await fetch(url);
+  const data = await response.json();
 
-  const iconCode = data.weather[0].icon;
-  weatherIconElem.innerHTML = `<img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" alt="${data.weather[0].description}">`;
+  if (response.ok) {
+    const dailyForecast = data.list.filter(forecast => forecast.dt_txt.includes("12:00:00"));
 
-  weathercard.style.display = "block";
-  errorMsg.style.display = "none";
-};
+    forecastContainer.innerHTML = "";
+    dailyForecast.forEach(day => {
+      const date = new Date(day.dt_txt).toLocaleDateString("en-IN", { weekday: "short" });
+      const temp = day.main.temp.toFixed(1);
+      const icon = day.weather[0].icon;
+      const desc = day.weather[0].description;
 
-searchbtn.addEventListener("click", () => {
+      const forecastCard = document.createElement("div");
+      forecastCard.classList.add("forecast-day");
+      forecastCard.innerHTML = `
+        <p>${date}</p>
+        <img src="https://openweathermap.org/img/wn/${icon}.png" alt="${desc}">
+        <p>${temp}°C</p>
+        <p>${desc}</p>
+      `;
+      forecastContainer.appendChild(forecastCard);
+    });
+  }
+}
+
+// Search button click event
+searchBtn.addEventListener("click", () => {
   const city = cityInput.value.trim();
-  if (city) fetchWeather(city);
-});
-
-cityInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter" && cityInput.value.trim()) {
-    fetchWeather(cityInput.value.trim());
+  if (city !== "") {
+    getCurrentWeather(city);
+    getForecast(city);
   }
-});
-
-window.addEventListener("DOMContentLoaded", () => {
-  displayWeather(sampleData);
 });
