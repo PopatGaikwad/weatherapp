@@ -1,38 +1,57 @@
 <!DOCTYPE html>
-  <html lang="en">
-      <head>
-           <title>Weather App</title>
-            <link rel="stylesheet"href="style.css">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-     </head>
-      <body>
-               <div class="weather-app-container">
-                       <h1 class="app-title">Weather App</h1>
-                       <div class="weathre-search">
-                           <input type="text" id="city-input" placeholder="Enter city"/>
-                            <button id="search-btn">search</button>
-                        </div> 
+<html lang="en">
+<head>
+  <!-- Page metadata -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
 
-                        <div class="weather-card" id="weather-card">
-                           <h2 id="city-name"></h2>
-                            <div class="weather-details">
-                              <span id="weather-icon"> <i class="fas fa-cloud"></i></span>
-                              <img id="weather-icon"/>  
-                              <div>
-                                   <div class="temperature" id="temperature"></div>
-                                    <div class="description" id="description"></div>
-                                         <span id="humidity"> </span>
-                                          <span id="wind"> </span>
-                                    </div>
-                                     <div id="forecast" class="forecast-section">
-                                           <h3>5-Day Forecast</h3>
-                                           <div id="forecast-cards" class="forecast-cards"></div>
-                                       </div>  
-                                </div>
-                             </div>
-                        </div>
-                </div>
-                     <div class="error-mag" id="error-msg" style="display:none">Not City Found</div>
-                          <script src="script.js"></script>
-         </body>
-    </html>
+  <!-- External CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header>
+      <h1>Weather App</h1>
+      <p class="location"></p>
+      <p id="currentTime" class="time">--:--:--</p>
+
+      <!-- Search Bar -->
+      <div class="search">
+        <input type="text" placeholder="Enter city name..." id="searchInput">
+        <button id="searchBtn">Search</button>
+      </div>
+    </header>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading hidden">⏳ Fetching weather data...</div>
+
+    <!-- Current Weather -->
+    <section class="current-weather">
+      <h2>Current Weather</h2>
+      <div class="weather-info">
+        <img id="weatherIcon" src="https://cdn-icons-png.flaticon.com/512/1116/1116453.png" alt="Weather Icon" class="weather-icon">
+        <div>
+          <p id="temperature" class="temperature">--°C</p>
+          <p id="condition" class="condition">--</p>
+          <p id="humidity" class="humidity">Humidity: --%</p>
+          <p id="cityName" class="city">City: --</p>
+        </div>
+      </div>
+      <p id="errorMessage" class="error"></p>
+    </section>
+
+    <!-- Forecast -->
+    <section class="forecast">
+      <h2>Forecast</h2>
+      <div class="forecast-grid">
+        <p class="placeholder-text">No forecast data yet.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
